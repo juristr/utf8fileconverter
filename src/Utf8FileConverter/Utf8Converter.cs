@@ -15,5 +15,7 @@ namespace Utf8FileConverter
             this.sourceDirectory = sourceDirectory;
             this.withoutBom = withoutBom;
         }
+
+
     }
 }
