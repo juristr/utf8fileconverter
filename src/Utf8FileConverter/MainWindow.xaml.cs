@@ -17,20 +17,9 @@ using System.Collections.ObjectModel;
 
 namespace Utf8FileConverter
 {
-    public class MainViewModel
+    class MainWindowViewModel
     {
-        public ObservableCollection<FileInfo> ResultList { get; set; }
-
-        public MainViewModel()
-        {
-            var fileInfoList = new ObservableCollection<FileInfo>
-            {
-                new FileInfo(){ Path = "C:\\test.txt", Encoding = "UTF-8"},
-                new FileInfo(){ Path = "C:\\test2.txt", Encoding = "ANSI"}
-            };
-
-            ResultList = fileInfoList;
-        }
+        public string SourcePath { get; set; }
     }
 
     /// <summary>
@@ -38,29 +27,22 @@ namespace Utf8FileConverter
     /// </summary>
     public partial class MainWindow : Window
     {
-        public MainViewModel ViewModel { get; set; }
-
-        public IEnumerable<FileInfo> ResultList
-        {
-            get
-            {
-                return ViewModel.ResultList;
-            }
-        }
+        MainWindowViewModel ViewModel { get; set; }
 
         public MainWindow()
         {
             InitializeComponent();
 
-            ViewModel = new MainViewModel();
-            DataContext = this;
+            ViewModel = new MainWindowViewModel();
+
+            this.DataContext = ViewModel;
         }
 
-        private void Button_Click_1(object sender, RoutedEventArgs e)
-        {
-            FolderBrowserDialog dialog = new FolderBrowserDialog();
-            dialog.ShowDialog();
-        }
+        //private void Button_Click_1(object sender, RoutedEventArgs e)
+        //{
+        //    FolderBrowserDialog dialog = new FolderBrowserDialog();
+        //    dialog.ShowDialog();
+        //}
 
         private void CopyStream(Stream input, Stream output)
         {
@@ -72,30 +54,46 @@ namespace Utf8FileConverter
             }
         }
 
-        private void Button_Click_2(object sender, RoutedEventArgs e)
-        {
-            var utf8Encoding = new UTF8Encoding(false);
-            var filepath = @"C:\projects\applications\IAM\Main\BackOffice\frontend\accounts\models\account.js";
-
-            byte[] bytes = File.ReadAllBytes(filepath);
-
-            if (StartsWithUTF8Bom(bytes))
-            {
-                bytes = bytes.Skip(3).ToArray<byte>(); //skip the BOM bytes
-            }
-
-            File.WriteAllText(filepath, utf8Encoding.GetString(bytes), utf8Encoding);
-        }
-
         private bool StartsWithUTF8Bom(byte[] bytes)
         {
             byte[] utf8BOM = Encoding.UTF8.GetPreamble();
             return bytes[0] == utf8BOM[0] && bytes[1] == utf8BOM[1] && bytes[2] == utf8BOM[2];
         }
 
-        private void DataGrid_SelectionChanged_1(object sender, SelectionChangedEventArgs e)
+        private void buttonConvert_Click(object sender, RoutedEventArgs e)
         {
+            var filepath = ViewModel.SourcePath;
 
+            /*
+             *  TODOS:
+             *      - check whether it is a real path
+             *      - If it is a path, then traverse recursively, if a file, just process that file
+             */
+
+            var utf8Encoding = new UTF8Encoding(false);
+
+            //for now *.js files only
+            var files = Directory.EnumerateFiles(filepath, "*.js", SearchOption.AllDirectories);
+            foreach (var file in files)
+            {
+                try
+                {
+                    byte[] bytes = File.ReadAllBytes(filepath);
+
+
+                    if (StartsWithUTF8Bom(bytes))
+                    {
+                        bytes = bytes.Skip(3).ToArray<byte>(); //skip the BOM bytes
+                    }
+
+                    File.WriteAllText(filepath, utf8Encoding.GetString(bytes), utf8Encoding);
+                }
+                catch (UnauthorizedAccessException ex)
+                {
+                    System.Windows.MessageBox.Show("Unauthorized to read/write " + file + ". Make sure they're not used within another tool or blocked on your VCS system");
+                    break;
+                }
+            }
         }
     }
 }
