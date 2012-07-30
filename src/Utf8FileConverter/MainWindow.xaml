@@ -3,20 +3,9 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         x:Class="Utf8FileConverter.MainWindow"
         xmlns:c="clr-namespace:Utf8FileConverter"
-        Title="UTF-8 File Converter" Height="346" Width="794" ResizeMode="NoResize">
-    <Window.Resources>
-        <c:MainViewModel x:Key="ViewModel"/>
-    </Window.Resources>
+        Title="UTF-8 File Converter" Height="130" Width="643" ResizeMode="NoResize">
     <Grid>
-        <Button Content="Button" HorizontalAlignment="Left" Margin="427,34,0,0" VerticalAlignment="Top" Width="75" Click="Button_Click_1" Height="22"/>
-        <TextBox HorizontalAlignment="Left" Height="23" Margin="34,33,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="377" FontSize="16" FontFamily="Consolas"/>
+        <TextBox HorizontalAlignment="Left" Height="23" Margin="34,33,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="591" FontSize="16" FontFamily="Consolas"/>
         <Button Content="Convert" HorizontalAlignment="Left" Margin="34,61,0,0" VerticalAlignment="Top" Width="157" Click="Button_Click_2" Height="22"/>
-        <DataGrid ItemsSource="{Binding ResultList}" HorizontalAlignment="Left" Margin="34,109,0,0" VerticalAlignment="Top" Height="160" Width="706"/>
-        <!--<DataGrid x:Name="fileGrid" ItemsSource="{Binding List}" AutoGenerateColumns="False" HorizontalAlignment="Left" Margin="34,98,0,0" VerticalAlignment="Top" RenderTransformOrigin="-0.667,-0.385" Height="190" Width="731">
-            <DataGrid.Columns>
-                <DataGridTextColumn Header="File Path" Binding="{Binding Path}"/>
-                <DataGridTextColumn Header="Encoding" Binding="{Binding Encoding}"/>
-            </DataGrid.Columns>
-        </DataGrid>-->
     </Grid>
 </Window>
