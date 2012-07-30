@@ -38,12 +38,6 @@ namespace Utf8FileConverter
             this.DataContext = ViewModel;
         }
 
-        //private void Button_Click_1(object sender, RoutedEventArgs e)
-        //{
-        //    FolderBrowserDialog dialog = new FolderBrowserDialog();
-        //    dialog.ShowDialog();
-        //}
-
         private void CopyStream(Stream input, Stream output)
         {
             byte[] buffer = new byte[8 * 1024];
@@ -72,28 +66,40 @@ namespace Utf8FileConverter
 
             var utf8Encoding = new UTF8Encoding(false);
 
-            //for now *.js files only
-            var files = Directory.EnumerateFiles(filepath, "*.js", SearchOption.AllDirectories);
-            foreach (var file in files)
+            FileAttributes fa = File.GetAttributes(filepath);
+            if ((fa & FileAttributes.Directory) == FileAttributes.Directory)
             {
-                try
+                //for now *.js files only
+                var files = Directory.EnumerateFiles(filepath, "*.js", SearchOption.AllDirectories);
+                foreach (var file in files)
                 {
-                    byte[] bytes = File.ReadAllBytes(filepath);
-
-
-                    if (StartsWithUTF8Bom(bytes))
+                    try
                     {
-                        bytes = bytes.Skip(3).ToArray<byte>(); //skip the BOM bytes
+                        ConvertToUTF8WithoutBOM(filepath, utf8Encoding);
                     }
-
-                    File.WriteAllText(filepath, utf8Encoding.GetString(bytes), utf8Encoding);
-                }
-                catch (UnauthorizedAccessException ex)
-                {
-                    System.Windows.MessageBox.Show("Unauthorized to read/write " + file + ". Make sure they're not used within another tool or blocked on your VCS system");
-                    break;
+                    catch (UnauthorizedAccessException ex)
+                    {
+                        System.Windows.MessageBox.Show("Unauthorized to read/write " + file + ". Make sure they're not used within another tool or blocked on your VCS system");
+                        break;
+                    }
                 }
             }
+            else
+            {
+                ConvertToUTF8WithoutBOM(filepath, utf8Encoding);
+            }
+        }
+
+        private void ConvertToUTF8WithoutBOM(string filepath, UTF8Encoding utf8Encoding)
+        {
+            byte[] bytes = File.ReadAllBytes(filepath);
+
+            if (StartsWithUTF8Bom(bytes))
+            {
+                bytes = bytes.Skip(3).ToArray<byte>(); //skip the BOM bytes
+            }
+
+            File.WriteAllText(filepath, utf8Encoding.GetString(bytes), utf8Encoding);
         }
     }
 }
