@@ -75,11 +75,12 @@ namespace Utf8FileConverter
                 {
                     try
                     {
-                        ConvertToUTF8WithoutBOM(filepath, utf8Encoding);
+                        ConvertToUTF8WithoutBOM(file, utf8Encoding);
                     }
                     catch (UnauthorizedAccessException ex)
                     {
-                        System.Windows.MessageBox.Show("Unauthorized to read/write " + file + ". Make sure they're not used within another tool or blocked on your VCS system");
+                        //System.Windows.MessageBox.Show("Unauthorized to read/write " + file + ". Make sure they're not used within another tool or blocked on your VCS system");
+                        System.Windows.MessageBox.Show(ex.Message);
                         break;
                     }
                 }
@@ -88,6 +89,11 @@ namespace Utf8FileConverter
             {
                 ConvertToUTF8WithoutBOM(filepath, utf8Encoding);
             }
+        }
+
+        private void ConvertFiles()
+        {
+
         }
 
         private void ConvertToUTF8WithoutBOM(string filepath, UTF8Encoding utf8Encoding)
